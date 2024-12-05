@@ -1,10 +1,11 @@
 import 'package:flutter/material.dart';
-import 'package:iconsax/iconsax.dart';
+import 'package:get/get.dart';
 import 'package:skillzy/core/configs/assets/app_images.dart';
 import 'package:skillzy/core/configs/theme/app_colors.dart';
-import 'package:smooth_page_indicator/smooth_page_indicator.dart';
+import 'package:skillzy/presentation/welcome/controllers/onboarding_controller.dart';
 
 import '../widgets/onboarding_dots.dart';
+import '../widgets/onboarding_next.dart';
 import '../widgets/onboarding_page.dart';
 import '../widgets/onboarding_skip.dart';
 
@@ -13,6 +14,8 @@ class OnboardingScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final controller = Get.put(onboardingController());
+
     List<Map<String, dynamic>> textParts = [
       {'text': 'Mit ', 'color': Colors.black},
       {'text': 'Skillzy', 'color': AppColors.primary},
@@ -35,6 +38,10 @@ class OnboardingScreen extends StatelessWidget {
         children: [
           // Page View
           PageView(
+            controller: controller.pageController,
+            onPageChanged: (int index) {
+              controller.updatePageIndicator(index);
+            },
             children: [
               onboardingPage(
                 image: AppImages.onboarding1,
@@ -64,30 +71,8 @@ class OnboardingScreen extends StatelessWidget {
           const onboardingDotsIndicator(),
 
           //   Next Button
-          Positioned(
-            bottom: kBottomNavigationBarHeight + 50,
-            left: 0,
-            right: 0,
-            child: Center(
-              child: SizedBox(
-                width: 300,
-                height: 50,
-                child: ElevatedButton(
-                  onPressed: () {},
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: AppColors.primary,
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(25),
-                    ),
-                  ),
-                  child: const Text(
-                    'Weiter',
-                    style: TextStyle(color: Colors.white),
-                  ),
-                ),
-              ),
-            ),
-          )
+          const onboarding_next(),
+
         ],
       ),
     );
