@@ -1,154 +1,191 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:iconsax/iconsax.dart';
+import 'package:skillzy/core/configs/assets/app_images.dart';
 import 'package:skillzy/core/configs/theme/app_colors.dart';
+import 'package:skillzy/data/services/auth_service.dart';
 import 'package:skillzy/presentation/auth/pages/login.dart';
 
-class RegisterPage extends StatelessWidget {
+import 'package:flutter/material.dart';
+import 'package:skillzy/presentation/auth/widgets/login_divider.dart';
+
+import '../../../core/configs/assets/app_vectors.dart';
+import '../widgets/social_buttons.dart';
+
+class RegisterPage extends StatefulWidget {
   const RegisterPage({super.key});
+
+  @override
+  _RegisterPageState createState() => _RegisterPageState();
+}
+
+class _RegisterPageState extends State<RegisterPage> {
+  final TextEditingController _passwordController = TextEditingController();
+  final TextEditingController _emailController = TextEditingController();
+  final TextEditingController _nameController = TextEditingController();
+
+  bool _agreeToTerms = false;
+
+  @override
+  void dispose() {
+    _passwordController.dispose();
+    super.dispose();
+  }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(),
+      appBar: buildAppBar(),
       bottomNavigationBar: _loginText(),
-      body: SingleChildScrollView(
-        child: Padding(
-          padding: const EdgeInsets.all(15),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              /// Title
-              _registerWidget(),
-              const SizedBox(height: 15),
+      body: SafeArea(
+        child: SingleChildScrollView(
+          child: Padding(
+            padding: EdgeInsets.symmetric(horizontal: 24.0),
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              crossAxisAlignment: CrossAxisAlignment.stretch,
+              children: <Widget>[
+                SizedBox(height: 24.0),
 
-              /// Form
-              Padding(
-                padding: const EdgeInsets.all(15),
-                child: Form(
-                    child: Column(
+                _registerHeading(),
+
+                Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Row(
-                      children: [
-                        Expanded(
-                          child: TextFormField(
-                            expands: false,
-                            decoration: const InputDecoration(
-                                labelText: 'Vorname',
-                                prefixIcon: Icon(Iconsax.user)),
-                          ),
-                        ),
-                        const SizedBox(width: 25),
-                        Expanded(
-                          child: TextFormField(
-                            expands: false,
-                            decoration: const InputDecoration(
-                                labelText: 'Nachname',
-                                prefixIcon: Icon(Iconsax.user)),
-                          ),
-                        ),
-                      ],
-                    ),
-
-                    /// Spacer
-                    const SizedBox(height: 25),
-
-                    /// Username
-                    TextFormField(
-                      expands: false,
-                      decoration: const InputDecoration(
-                          labelText: 'Benutername',
-                          prefixIcon: Icon(Iconsax.user_edit)),
-                    ),
-                    const SizedBox(height: 25),
-
-                    /// Email
-                    TextFormField(
-                      expands: false,
-                      decoration: const InputDecoration(
-                          labelText: 'Email', prefixIcon: Icon(Iconsax.direct)),
-                    ),
-                    const SizedBox(height: 25),
-
-                    /// Password
-                    TextFormField(
-                      obscureText: true,
-                      expands: false,
-                      decoration: const InputDecoration(
-                          labelText: 'Passwort',
-                          prefixIcon: Icon(Iconsax.password_check),
-                          suffixIcon: Icon(Iconsax.eye_slash)),
-                    ),
-                    const SizedBox(height: 25),
-
-                    /// Datenschutz etc
-                    Row(
-                      children: [
-                        SizedBox(
-                            width: 24,
-                            height: 24,
-                            child: Checkbox(
-                                activeColor: AppColors.primary,
-                                value: true,
-                                onChanged: (value) {}
-                            )
-                        ),
-                        const SizedBox(width: 25),
-                        const Text('Ich bleibe angemeldet'),
-
-
-                      ],
-                    ),
-
-                    const SizedBox(height: 50),
-
-                    /// Button
-                    SizedBox(
-                      width: double.infinity,
-                      height: 50,
-                      child: SizedBox(
-                        child: ElevatedButton(
-                          onPressed: () => (),
-                          style: ElevatedButton.styleFrom(
-                            backgroundColor: AppColors.primary,
-                            shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(15),
-                            ),
-                          ),
-                          child: const Text(
-                            'Account erstellen',
-                            style: TextStyle(color: Colors.white),
-                          ),
-                        ),
+                    Text('Name', style: TextStyle(fontWeight: FontWeight.bold)),
+                    SizedBox(height: 8),
+                    TextField(
+                      decoration: InputDecoration(
+                        hintText: 'John Doe',
+                        prefixIcon: Icon(Icons.person, color: Colors.grey),
                       ),
                     ),
-                    const SizedBox(height: 25),
-
-                    /// Divider
-                    const Divider(
-                      height: 50,
-                      thickness: 1,
-                    ),
-                    const SizedBox(height: 25),
-
-                    /// Social Media
-                    // TODO: Create Social login buttons here
                   ],
-                )),
-              )
-            ],
+                ),
+                SizedBox(height: 16.0),
+                Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text('Email',
+                        style: TextStyle(fontWeight: FontWeight.bold)),
+                    SizedBox(height: 8),
+                    TextField(
+                      controller: _emailController,
+                      decoration: InputDecoration(
+                        hintText: 'john.doe@example.com',
+                        prefixIcon: Icon(Icons.email, color: Colors.grey),
+                      ),
+                    ),
+                  ],
+                ),
+                SizedBox(height: 16.0),
+                Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text('Passwort',
+                        style: TextStyle(fontWeight: FontWeight.bold)),
+                    SizedBox(height: 8),
+                    TextField(
+                      obscureText: true,
+                      controller: _passwordController,
+                      decoration: InputDecoration(
+                        hintText: 'Password',
+                        prefixIcon: Icon(Icons.lock, color: Colors.grey),
+                      ),
+                    ),
+                  ],
+                ),
+                SizedBox(height: 24.0),
+                Row(
+                  children: [
+                    Checkbox(
+                      value: _agreeToTerms,
+                      activeColor: AppColors.primary,
+                      onChanged: (value) {
+                        setState(() {
+                          _agreeToTerms = value!;
+                        });
+                      },
+                    ),
+                    Expanded(
+                      child: Text('I agree to the Terms and Conditions'),
+                    ),
+                  ],
+                ),
+                SizedBox(height: 20.0),
+                ElevatedButton(
+                  onPressed: _agreeToTerms
+                      ? () async {
+                          await AuthService().register(
+                            email: _emailController.text,
+                            password: _passwordController.text,
+                          );
+                        }
+                      : null,
+                  child: Text('Registrieren'),
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: AppColors.primary,
+                    foregroundColor: Colors.white,
+                  ),
+                ),
+                SizedBox(height: 20.0),
+
+                /// Divider
+                const loginDivider(),
+
+                /// Social Icons
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                  children: [
+                    const socialButtons(assetName: AppVectors.googleLogo),
+                    const socialButtons(assetName: AppVectors.appleLogo),
+                  ],
+                ),
+              ],
+            ),
           ),
         ),
       ),
     );
   }
 
-  Widget _registerWidget() {
-    return const Text(
-      'Erstelle deinen Account',
-      style: TextStyle(
-        fontSize: 24,
-        fontWeight: FontWeight.bold,
+  AppBar buildAppBar() {
+    return AppBar(
+      backgroundColor: Colors.transparent,
+      elevation: 0,
+      leading: IconButton(
+        icon: Icon(Icons.arrow_back, color: Colors.black),
+        onPressed: () {
+          Get.to(() => const LoginPage());
+        },
+      ),
+      actions: [
+        Padding(
+          padding: const EdgeInsets.only(right: 16.0),
+          child: Image.asset(
+            AppImages.logo,
+            width: 45,
+            height: 45,
+          ),
+        ),
+      ],
+    );
+  }
+
+  Widget _registerHeading() {
+    return Padding(
+      padding: const EdgeInsets.only(top: 10, bottom: 20),
+      child: Column(
+        children: [
+          Text(
+            'Erstelle einen Account',
+            style: TextStyle(
+              fontSize: 26,
+              fontWeight: FontWeight.w800,
+              fontFamily: 'Satoshi',
+            ),
+          ),
+        ],
       ),
     );
   }
@@ -173,8 +210,7 @@ class RegisterPage extends StatelessWidget {
                     color: AppColors.primary,
                     fontWeight: FontWeight.w500,
                     fontSize: 14),
-              )
-          )
+              ))
         ],
       ),
     );

@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
 import 'package:skillzy/core/configs/assets/app_images.dart';
 import 'package:skillzy/presentation/welcome/pages/onboarding.dart';
 
@@ -27,10 +28,6 @@ class _SplashPageState extends State<SplashPage> {
 
   Future<void> redirect() async {
     await Future.delayed(const Duration(seconds: 2));
-    Navigator.pushReplacement(
-      context,
-      MaterialPageRoute(
-          builder: (BuildContext context) => const OnboardingScreen()),
-    );
+    Get.to(() => const OnboardingScreen());
   }
 }

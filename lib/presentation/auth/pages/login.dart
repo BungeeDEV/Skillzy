@@ -1,103 +1,148 @@
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
 import 'package:iconsax/iconsax.dart';
-import 'package:skillzy/core/configs/theme/app_colors.dart';
+import 'package:skillzy/core/configs/assets/app_images.dart';
+import 'package:skillzy/core/configs/assets/app_vectors.dart';
+import 'package:skillzy/presentation/auth/pages/register.dart';
+import 'package:skillzy/presentation/auth/widgets/login_divider.dart';
 
-import '../../../core/configs/assets/app_images.dart';
+import '../../../core/configs/theme/app_colors.dart';
+import '../widgets/social_buttons.dart';
 
-class LoginPage extends StatelessWidget {
+class LoginPage extends StatefulWidget {
   const LoginPage({super.key});
+
+  @override
+  _LoginPageState createState() => _LoginPageState();
+}
+
+class _LoginPageState extends State<LoginPage> {
+  bool _stayLoggedIn = false;
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: SingleChildScrollView(
-        child: Padding(
-          padding: const EdgeInsets.all(15),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              const Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Image(
-                    height: 150,
-                    image: AssetImage(AppImages.logo),
-                  ),
-                  Text(
-                    'Willkommen zurück',
-                    style: TextStyle(
-                      fontSize: 24,
-                      fontWeight: FontWeight.bold,
-                    ),
-                  ),
-                  SizedBox(height: 5),
-                  Text(
-                    'Melde dich an, um fortzufahren',
-                    style: TextStyle(
-                      fontSize: 16,
-                      fontWeight: FontWeight.w500,
-                    ),
-                  )
-                ],
-              ),
+      bottomNavigationBar: _registerText(),
+      body: SafeArea(
+        child: SingleChildScrollView(
+          child: Padding(
+            padding: EdgeInsets.symmetric(horizontal: 24.0),
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              crossAxisAlignment: CrossAxisAlignment.stretch,
+              children: <Widget>[
+                SizedBox(height: 48.0),
+                SizedBox(
+                  width: 80,
+                  height: 80,
+                  child: Image.asset(AppImages.logo),
+                ),
 
-              const SizedBox(height: 25),
+                /// Heading Text
+                _loginHeading(),
 
-              /// Form
-              Form(
-                child: Column(
+                /// Email
+                Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    /// Email
-                    TextFormField(
-                      expands: false,
-                      decoration: const InputDecoration(
-                          labelText: 'Email', prefixIcon: Icon(Iconsax.direct)),
-                    ),
-                    const SizedBox(height: 25),
-
-                    /// Password
-                    TextFormField(
-                      obscureText: true,
-                      expands: false,
-                      decoration: const InputDecoration(
-                          labelText: 'Passwort',
-                          prefixIcon: Icon(Iconsax.password_check),
-                          suffixIcon: Icon(Iconsax.eye_slash)),
+                    Text('Email',
+                        style: TextStyle(fontWeight: FontWeight.bold)),
+                    SizedBox(height: 8),
+                    TextField(
+                      decoration: InputDecoration(
+                        hintText: 'john.doe@example.com',
+                        prefixIcon:
+                            Icon(Iconsax.direct_inbox5, color: AppColors.grey),
+                      ),
                     ),
                   ],
                 ),
-              ),
-              const SizedBox(height: 25),
 
-              Row(
-                children: [
-                  SizedBox(
-                      width: 24,
-                      height: 24,
-                      child: Checkbox(
-                          activeColor: AppColors.primary,
-                          value: true,
-                          onChanged: (value) {}
-                      )
-                  ),
-                  const SizedBox(width: 25),
+                SizedBox(height: 16.0),
 
-                ],
-              )
+                /// Password
+                Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text('Passwort',
+                        style: TextStyle(fontWeight: FontWeight.bold)),
+                    SizedBox(height: 8),
+                    TextField(
+                      obscureText: true,
+                      decoration: InputDecoration(
+                        hintText: '*************',
+                        prefixIcon:
+                            Icon(Iconsax.password_check, color: AppColors.grey),
+                        suffixIcon: Icon(Iconsax.eye_slash, color: AppColors.grey),
+                      ),
+                    ),
+                  ],
+                ),
 
-            ],
+                SizedBox(height: 24.0),
+
+                /// Login checkox
+                Row(
+                  children: [
+                    Checkbox(
+                      value: _stayLoggedIn,
+                      onChanged: (value) {
+                        setState(() {
+                          _stayLoggedIn = value!;
+                        });
+                      },
+                    ),
+                    Text('Angemeldet bleiben'),
+                  ],
+                ),
+
+                SizedBox(height: 24.0),
+
+                ElevatedButton(
+                  child: Text('Einloggen',
+                      style: TextStyle(
+                        color: Colors.white,
+                      )),
+                  onPressed: () {
+                    // Implement login logic
+                  },
+                ),
+                SizedBox(height: 24.0),
+
+                const loginDivider(),
+
+                // Social Icons
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                  children: [
+                    const socialButtons(assetName: AppVectors.googleLogo),
+                    const socialButtons(assetName: AppVectors.appleLogo),
+                  ],
+                ),
+              ],
+            ),
           ),
         ),
       ),
     );
   }
 
-  Widget _loginWidget() {
-    return const Text(
-      'Willkommen zurück 👋🏼',
-      style: TextStyle(
-        fontSize: 24,
-        fontWeight: FontWeight.bold,
+  Widget _loginHeading() {
+    return Padding(
+      padding: const EdgeInsets.symmetric(vertical: 30),
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          const Text(
+            'Wilkommen zurück',
+            style: TextStyle(
+              fontSize: 26.0,
+              fontWeight: FontWeight.w800,
+              color: Colors.black,
+            ),
+            textAlign: TextAlign.center,
+          ),
+        ],
       ),
     );
   }
@@ -109,11 +154,13 @@ class LoginPage extends StatelessWidget {
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
           const Text(
-            'Du bit noch nicht registriert?',
+            'Du hast noch keinen Account?',
             style: TextStyle(fontWeight: FontWeight.w500, fontSize: 14),
           ),
           TextButton(
-              onPressed: () {},
+              onPressed: () {
+                Get.to(() => const RegisterPage());
+              },
               child: const Text(
                 'Registrieren',
                 style: TextStyle(
@@ -125,62 +172,5 @@ class LoginPage extends StatelessWidget {
       ),
     );
   }
-}
 
-class _loginButton extends StatelessWidget {
-  const _loginButton({
-    super.key,
-  });
-
-  @override
-  Widget build(BuildContext context) {
-    return SizedBox(
-      width: double.infinity,
-      height: 50,
-      child: SizedBox(
-        child: ElevatedButton(
-          onPressed: () => (),
-          style: ElevatedButton.styleFrom(
-            backgroundColor: AppColors.primary,
-            shape: RoundedRectangleBorder(
-              borderRadius: BorderRadius.circular(15),
-            ),
-          ),
-          child: const Text(
-            'Account erstellen',
-            style: TextStyle(color: Colors.white),
-          ),
-        ),
-      ),
-    );
-  }
-}
-
-class _registerButton extends StatelessWidget {
-  const _registerButton({
-    super.key,
-  });
-
-  @override
-  Widget build(BuildContext context) {
-    return SizedBox(
-      width: double.infinity,
-      height: 50,
-      child: SizedBox(
-        child: ElevatedButton(
-          onPressed: () => (),
-          style: ElevatedButton.styleFrom(
-            backgroundColor: AppColors.primary,
-            shape: RoundedRectangleBorder(
-              borderRadius: BorderRadius.circular(15),
-            ),
-          ),
-          child: const Text(
-            'Account erstellen',
-            style: TextStyle(color: Colors.white),
-          ),
-        ),
-      ),
-    );
-  }
 }
