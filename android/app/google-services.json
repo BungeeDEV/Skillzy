@@ -1,0 +1,54 @@
+{
+  "project_info": {
+    "project_number": "830997393282",
+    "project_id": "skillzy-55f5e",
+    "storage_bucket": "skillzy-55f5e.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:830997393282:android:ee1ab19acc4ba155d1699b",
+        "android_client_info": {
+          "package_name": "com.skillzy.app"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "830997393282-ga4h5t02tl3h4eji97f1ebsolbkn49p0.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.skillzy.app",
+            "certificate_hash": "5e8f16062ea3cd2c4a0d547876baa6f38cabf625"
+          }
+        },
+        {
+          "client_id": "830997393282-lbja6earsaoenq416d1fgp85a0vig6bk.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAwRR5oYy6kwozMDf84FvHZYTVotJHtL0s"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "830997393282-lbja6earsaoenq416d1fgp85a0vig6bk.apps.googleusercontent.com",
+              "client_type": 3
+            },
+            {
+              "client_id": "830997393282-do3lfl4p7l2c7k58edd9mhqs98bl1qot.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "com.skillzy.app"
+              }
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
