@@ -117,6 +117,7 @@ class _RegisterPageState extends State<RegisterPage> {
                   onPressed: _agreeToTerms
                       ? () async {
                           await AuthService().register(
+                            context: context,
                             email: _emailController.text,
                             password: _passwordController.text,
                           );
@@ -163,7 +164,7 @@ class _RegisterPageState extends State<RegisterPage> {
         Padding(
           padding: const EdgeInsets.only(right: 16.0),
           child: Image.asset(
-            AppImages.logo,
+            AppImages.mascot,
             width: 45,
             height: 45,
           ),

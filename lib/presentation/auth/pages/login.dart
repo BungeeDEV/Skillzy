@@ -3,6 +3,7 @@ import 'package:get/get.dart';
 import 'package:iconsax/iconsax.dart';
 import 'package:skillzy/core/configs/assets/app_images.dart';
 import 'package:skillzy/core/configs/assets/app_vectors.dart';
+import 'package:skillzy/data/services/auth_service.dart';
 import 'package:skillzy/presentation/auth/pages/register.dart';
 import 'package:skillzy/presentation/auth/widgets/login_divider.dart';
 
@@ -17,6 +18,8 @@ class LoginPage extends StatefulWidget {
 }
 
 class _LoginPageState extends State<LoginPage> {
+  final TextEditingController _passwordController = TextEditingController();
+  final TextEditingController _emailController = TextEditingController();
   bool _stayLoggedIn = false;
 
   @override
@@ -33,9 +36,9 @@ class _LoginPageState extends State<LoginPage> {
               children: <Widget>[
                 SizedBox(height: 48.0),
                 SizedBox(
-                  width: 80,
-                  height: 80,
-                  child: Image.asset(AppImages.logo),
+                  width: 100,
+                  height: 100,
+                  child: Image.asset(AppImages.mascot),
                 ),
 
                 /// Heading Text
@@ -49,10 +52,11 @@ class _LoginPageState extends State<LoginPage> {
                         style: TextStyle(fontWeight: FontWeight.bold)),
                     SizedBox(height: 8),
                     TextField(
+                      controller: _emailController,
                       decoration: InputDecoration(
                         hintText: 'john.doe@example.com',
                         prefixIcon:
-                            Icon(Iconsax.direct_inbox5, color: AppColors.grey),
+                            Icon(Iconsax.direct_inbox5, color: AppColors.brown),
                       ),
                     ),
                   ],
@@ -68,12 +72,14 @@ class _LoginPageState extends State<LoginPage> {
                         style: TextStyle(fontWeight: FontWeight.bold)),
                     SizedBox(height: 8),
                     TextField(
+                      controller: _passwordController,
                       obscureText: true,
                       decoration: InputDecoration(
                         hintText: '*************',
                         prefixIcon:
-                            Icon(Iconsax.password_check, color: AppColors.grey),
-                        suffixIcon: Icon(Iconsax.eye_slash, color: AppColors.grey),
+                            Icon(Iconsax.password_check, color: AppColors.brown),
+                        suffixIcon:
+                            Icon(Iconsax.eye_slash, color: AppColors.brown),
                       ),
                     ),
                   ],
@@ -82,9 +88,11 @@ class _LoginPageState extends State<LoginPage> {
                 SizedBox(height: 24.0),
 
                 /// Login checkox
+                /// TODO Implement login logic
                 Row(
                   children: [
                     Checkbox(
+                      activeColor: AppColors.brown,
                       value: _stayLoggedIn,
                       onChanged: (value) {
                         setState(() {
@@ -103,8 +111,12 @@ class _LoginPageState extends State<LoginPage> {
                       style: TextStyle(
                         color: Colors.white,
                       )),
-                  onPressed: () {
+                  onPressed: () async {
                     // Implement login logic
+                    await AuthService().login(
+                        context: context,
+                        email: _emailController.text,
+                        password: _passwordController.text);
                   },
                 ),
                 SizedBox(height: 24.0),
@@ -129,7 +141,7 @@ class _LoginPageState extends State<LoginPage> {
 
   Widget _loginHeading() {
     return Padding(
-      padding: const EdgeInsets.symmetric(vertical: 30),
+      padding: const EdgeInsets.only(top: 10, bottom: 30),
       child: Row(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
@@ -164,7 +176,7 @@ class _LoginPageState extends State<LoginPage> {
               child: const Text(
                 'Registrieren',
                 style: TextStyle(
-                    color: AppColors.primary,
+                    color: AppColors.brown,
                     fontWeight: FontWeight.w500,
                     fontSize: 14),
               ))
@@ -172,5 +184,4 @@ class _LoginPageState extends State<LoginPage> {
       ),
     );
   }
-
 }

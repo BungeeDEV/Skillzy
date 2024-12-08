@@ -1,7 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:skillzy/core/configs/assets/app_images.dart';
+import 'package:skillzy/data/services/auth_service.dart';
+import 'package:skillzy/presentation/auth/pages/login.dart';
 import 'package:skillzy/presentation/welcome/pages/onboarding.dart';
+
+import '../../home/pages/root.dart';
 
 class SplashPage extends StatefulWidget {
   const SplashPage({super.key});
@@ -27,7 +31,12 @@ class _SplashPageState extends State<SplashPage> {
   }
 
   Future<void> redirect() async {
-    await Future.delayed(const Duration(seconds: 2));
-    Get.to(() => const OnboardingScreen());
+    AuthService().authStateChanges.listen((snapshot) {
+      if (snapshot != null) {
+        Get.to(() => const RootPage());
+      } else {
+        Get.to(() => const LoginPage());
+      }
+    });
   }
 }
