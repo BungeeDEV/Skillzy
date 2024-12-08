@@ -1,13 +1,19 @@
+import 'dart:async';
+
+import 'package:awesome_snackbar_content/awesome_snackbar_content.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:iconsax/iconsax.dart';
 import 'package:skillzy/core/configs/assets/app_images.dart';
 import 'package:skillzy/core/configs/assets/app_vectors.dart';
-import 'package:skillzy/data/services/auth_service.dart';
+import 'package:skillzy/core/widgets/snackbar.dart';
 import 'package:skillzy/presentation/auth/pages/register.dart';
 import 'package:skillzy/presentation/auth/widgets/login_divider.dart';
+import 'package:skillzy/presentation/home/pages/root.dart';
+import 'package:supabase/supabase.dart';
 
 import '../../../core/configs/theme/app_colors.dart';
+import '../../../main.dart';
 import '../widgets/social_buttons.dart';
 
 class LoginPage extends StatefulWidget {
@@ -20,7 +26,40 @@ class LoginPage extends StatefulWidget {
 class _LoginPageState extends State<LoginPage> {
   final TextEditingController _passwordController = TextEditingController();
   final TextEditingController _emailController = TextEditingController();
+  bool _isLoading = false;
+  bool _redirecting = false;
   bool _stayLoggedIn = false;
+  late final StreamSubscription<AuthState> _authStateSubscription;
+
+  @override
+  void initState() {
+    _authStateSubscription = supabase.auth.onAuthStateChange.listen(
+      (data) {
+        if (_redirecting) return;
+        final session = data.session;
+        if (session != null) {
+          _redirecting = true;
+          Navigator.of(context).pushReplacement(
+            MaterialPageRoute(builder: (context) => const RootPage()),
+          );
+        }
+      },
+      onError: (error) {
+        if (error is AuthException) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(content: Text(error.message), backgroundColor: Colors.red),
+          );
+        } else {
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(
+                content: Text('Unexpected error occurred'),
+                backgroundColor: Colors.red),
+          );
+        }
+      },
+    );
+    super.initState();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -76,8 +115,8 @@ class _LoginPageState extends State<LoginPage> {
                       obscureText: true,
                       decoration: InputDecoration(
                         hintText: '*************',
-                        prefixIcon:
-                            Icon(Iconsax.password_check, color: AppColors.brown),
+                        prefixIcon: Icon(Iconsax.password_check,
+                            color: AppColors.brown),
                         suffixIcon:
                             Icon(Iconsax.eye_slash, color: AppColors.brown),
                       ),
@@ -103,24 +142,18 @@ class _LoginPageState extends State<LoginPage> {
                     Text('Angemeldet bleiben'),
                   ],
                 ),
-
                 SizedBox(height: 24.0),
 
                 ElevatedButton(
-                  child: Text('Einloggen',
+                  onPressed: _isLoading ? null : _signIn,
+                  child: Text(_isLoading ? 'Einloggen...' : 'Let\'s Go',
                       style: TextStyle(
                         color: Colors.white,
                       )),
-                  onPressed: () async {
-                    // Implement login logic
-                    await AuthService().login(
-                        context: context,
-                        email: _emailController.text,
-                        password: _passwordController.text);
-                  },
                 ),
                 SizedBox(height: 24.0),
 
+                /// Divider
                 const loginDivider(),
 
                 // Social Icons
@@ -183,5 +216,42 @@ class _LoginPageState extends State<LoginPage> {
         ],
       ),
     );
+  }
+
+  Future<void> _signIn() async {
+    try {
+      setState(() {
+        _isLoading = true;
+      });
+
+      /// Login
+      await supabase.auth.signInWithPassword(
+          password: _passwordController.text, email: _emailController.text);
+
+      if (mounted) {
+        showSnackBar(
+            context, 'Erfolg', 'Login war erfolgreich.', ContentType.success);
+        _emailController.clear();
+        _passwordController.clear();
+      }
+    } on AuthException catch (error) {
+      if (mounted) {
+        /// Show error message
+        showSnackBar(context, 'Fehler', 'Fehler aufgetreten: ${error.message}',
+            ContentType.failure);
+      }
+    } catch (error) {
+      if (mounted) {
+        /// Show error message
+        showSnackBar(context, 'Fehler', 'Fehler aufgetreten: $error',
+            ContentType.failure);
+      }
+    } finally {
+      if (mounted) {
+        setState(() {
+          _isLoading = false;
+        });
+      }
+    }
   }
 }

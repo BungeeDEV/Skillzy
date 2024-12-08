@@ -1,15 +1,19 @@
+import 'package:awesome_snackbar_content/awesome_snackbar_content.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:iconsax/iconsax.dart';
 import 'package:skillzy/core/configs/assets/app_images.dart';
 import 'package:skillzy/core/configs/theme/app_colors.dart';
-import 'package:skillzy/data/services/auth_service.dart';
+import 'package:skillzy/data/repository/user_repository.dart';
+import 'package:skillzy/data/servics/auth/auth_service.dart';
+import 'package:skillzy/main.dart';
 import 'package:skillzy/presentation/auth/pages/login.dart';
 
 import 'package:flutter/material.dart';
 import 'package:skillzy/presentation/auth/widgets/login_divider.dart';
+import 'package:supabase/supabase.dart';
 
 import '../../../core/configs/assets/app_vectors.dart';
+import '../../../core/widgets/snackbar.dart';
 import '../widgets/social_buttons.dart';
 
 class RegisterPage extends StatefulWidget {
@@ -22,7 +26,8 @@ class RegisterPage extends StatefulWidget {
 class _RegisterPageState extends State<RegisterPage> {
   final TextEditingController _passwordController = TextEditingController();
   final TextEditingController _emailController = TextEditingController();
-  final TextEditingController _nameController = TextEditingController();
+  final TextEditingController _usernameController = TextEditingController();
+  bool _isLoading = false;
 
   bool _agreeToTerms = false;
 
@@ -52,11 +57,12 @@ class _RegisterPageState extends State<RegisterPage> {
                 Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Text('Name', style: TextStyle(fontWeight: FontWeight.bold)),
+                    Text('Username',
+                        style: TextStyle(fontWeight: FontWeight.bold)),
                     SizedBox(height: 8),
                     TextField(
                       decoration: InputDecoration(
-                        hintText: 'John Doe',
+                        hintText: 'JohnyDoe',
                         prefixIcon: Icon(Icons.person, color: Colors.grey),
                       ),
                     ),
@@ -113,21 +119,20 @@ class _RegisterPageState extends State<RegisterPage> {
                   ],
                 ),
                 SizedBox(height: 20.0),
+
+                /// Register Button
                 ElevatedButton(
-                  onPressed: _agreeToTerms
-                      ? () async {
-                          await AuthService().register(
-                            context: context,
-                            email: _emailController.text,
-                            password: _passwordController.text,
-                          );
-                        }
-                      : null,
-                  child: Text('Registrieren'),
+                  onPressed: (_isLoading || !_agreeToTerms) ? null : _signUp,
                   style: ElevatedButton.styleFrom(
                     backgroundColor: AppColors.primary,
                     foregroundColor: Colors.white,
                   ),
+                  child: _isLoading
+                      ? CircularProgressIndicator(
+                          valueColor:
+                              AlwaysStoppedAnimation<Color>(Colors.white),
+                        )
+                      : Text('Register'),
                 ),
                 SizedBox(height: 20.0),
 
@@ -215,5 +220,52 @@ class _RegisterPageState extends State<RegisterPage> {
         ],
       ),
     );
+  }
+
+  Future<void> _signUp() async {
+    setState(() {
+      _isLoading = true;
+    });
+
+    try {
+      await AuthService().signUpWithEmailAndPassword(
+          email: _emailController.text, password: _passwordController.text);
+
+      if (mounted) {
+        showSnackBar(
+            context, 'Yessir.', 'Account erstellt', ContentType.success);
+      }
+    } on AuthException catch (e) {
+      if (mounted) {
+        showSnackBar(
+            context, 'Fehler', "Fehler: ${e.message}", ContentType.failure);
+        setState(() {
+          _isLoading = false;
+        });
+      }
+    } on PostgrestException catch (e) {
+      if (mounted) {
+        showSnackBar(
+            context, 'Fehler', "Fehler: ${e.message}", ContentType.failure);
+        setState(() {
+          _isLoading = false;
+        });
+      }
+    } catch (e) {
+      if (mounted) {
+        showSnackBar(
+            context, 'Fehler', 'Fehler aufgetreten: $e', ContentType.failure);
+        setState(() {
+          _isLoading = false;
+        });
+      }
+    } finally {
+      await UserRepository().createUser(_usernameController.text, null, null);
+      if (mounted) {
+        setState(() {
+          _isLoading = false;
+        });
+      }
+    }
   }
 }

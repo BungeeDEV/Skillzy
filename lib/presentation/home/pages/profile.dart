@@ -1,9 +1,34 @@
 import 'package:flutter/material.dart';
+import 'package:iconsax/iconsax.dart';
+import 'package:skillzy/main.dart';
+import 'package:skillzy/presentation/auth/pages/login.dart';
 
 import '../../../core/configs/theme/app_colors.dart';
+import '../../../data/repository/user_repository.dart';
 
-class ProfilePage extends StatelessWidget {
+class ProfilePage extends StatefulWidget {
   const ProfilePage({super.key});
+
+  @override
+  State<ProfilePage> createState() => _ProfilePageState();
+}
+
+class _ProfilePageState extends State<ProfilePage> {
+  String _username = '';
+
+  @override
+  void initState() {
+    super.initState();
+    _loadUsername();
+  }
+
+  Future<void> _loadUsername() async {
+    // final username = await UserRepository().getCurrentUsername();
+    var username = '';
+    setState(() {
+      _username = username ?? 'Unknown User';
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -18,12 +43,22 @@ class ProfilePage extends StatelessWidget {
               Padding(
                 padding: const EdgeInsets.all(16.0),
                 child: Row(
-                  mainAxisAlignment: MainAxisAlignment.end,
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
                     IconButton(
-                      icon: const Icon(Icons.settings, color: Colors.white),
+                      icon: const Icon(Iconsax.setting, color: Colors.white),
                       onPressed: () {},
                     ),
+                    IconButton(
+                        onPressed: () {
+                          supabase.auth.signOut();
+                          Navigator.pushReplacement(
+                              context,
+                              MaterialPageRoute(
+                                  builder: (BuildContext context) =>
+                                      const LoginPage()));
+                        },
+                        icon: Icon(Iconsax.logout, color: Colors.white))
                   ],
                 ),
               ),
@@ -65,8 +100,8 @@ class ProfilePage extends StatelessWidget {
                                   color: Colors.white,
                                 ),
                               ),
-                              const Text(
-                                '@bryanwolfe14',
+                              Text(
+                                '@ $_username',
                                 style: TextStyle(
                                   color: Colors.grey,
                                 ),

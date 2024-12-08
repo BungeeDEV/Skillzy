@@ -39,6 +39,9 @@ dependencies:
   firebase_auth: ^5.3.4
   fluttertoast: ^8.2.8
   curved_navigation_bar: ^1.0.6
+  supabase_flutter: ^2.0.0
+  awesome_snackbar_content: ^0.1.4
+  intl: ^0.19.0
 
   # Icons
   cupertino_icons: ^1.0.8
