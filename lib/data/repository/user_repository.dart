@@ -5,19 +5,14 @@ class UserRepository {
 
   // Create or update user in the database
   Future<String> createUser(
-      String username, String? firstname, String? lastname) async {
-    print('Creating user');
-
-    final userId = _supabaseClient.auth.currentUser!.id;
-
-    print(userId);
+      String userId, String username, String? firstname, String? lastname) async {
 
     final update = {
       'id': userId,
       'username': username,
       'firstname': firstname,
       'lastname': lastname,
-      'created_at': null
+      'created_at': DateTime.now().toIso8601String(),
     };
 
     await _supabaseClient.from('users').upsert(update);

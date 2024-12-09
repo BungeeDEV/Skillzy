@@ -8,6 +8,7 @@ import 'package:skillzy/core/configs/assets/app_images.dart';
 import 'package:skillzy/core/configs/assets/app_vectors.dart';
 import 'package:skillzy/core/widgets/snackbar.dart';
 import 'package:skillzy/presentation/auth/pages/register.dart';
+import 'package:skillzy/presentation/auth/widgets/custom_input.dart';
 import 'package:skillzy/presentation/auth/widgets/login_divider.dart';
 import 'package:skillzy/presentation/home/pages/root.dart';
 import 'package:supabase/supabase.dart';
@@ -46,19 +47,23 @@ class _LoginPageState extends State<LoginPage> {
       },
       onError: (error) {
         if (error is AuthException) {
-          ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(content: Text(error.message), backgroundColor: Colors.red),
-          );
+          showSnackBar(context, 'Fehler', 'Fehler aufgetreten: error.message',
+              ContentType.failure);
         } else {
-          ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(
-                content: Text('Unexpected error occurred'),
-                backgroundColor: Colors.red),
-          );
+          showSnackBar(context, 'Fehler', 'Unerwarteter Fehler aufgetreten',
+              ContentType.failure);
         }
       },
     );
     super.initState();
+  }
+
+  @override
+  void dispose() {
+    _authStateSubscription.cancel();
+    _passwordController.dispose();
+    _emailController.dispose();
+    super.dispose();
   }
 
   @override
@@ -90,13 +95,12 @@ class _LoginPageState extends State<LoginPage> {
                     Text('Email',
                         style: TextStyle(fontWeight: FontWeight.bold)),
                     SizedBox(height: 8),
-                    TextField(
+                    CustomAuthInput(
+                      hintText: 'example@mail.com',
+                      icon: Iconsax.direct_inbox5,
+                      color: AppColors.secondary,
+                      focusColor: AppColors.secondary,
                       controller: _emailController,
-                      decoration: InputDecoration(
-                        hintText: 'john.doe@example.com',
-                        prefixIcon:
-                            Icon(Iconsax.direct_inbox5, color: AppColors.brown),
-                      ),
                     ),
                   ],
                 ),
@@ -110,16 +114,13 @@ class _LoginPageState extends State<LoginPage> {
                     Text('Passwort',
                         style: TextStyle(fontWeight: FontWeight.bold)),
                     SizedBox(height: 8),
-                    TextField(
+                    CustomAuthInput(
+                      hintText: '*************',
+                      icon: Iconsax.password_check,
+                      color: AppColors.secondary,
+                      focusColor: AppColors.secondary,
                       controller: _passwordController,
                       obscureText: true,
-                      decoration: InputDecoration(
-                        hintText: '*************',
-                        prefixIcon: Icon(Iconsax.password_check,
-                            color: AppColors.brown),
-                        suffixIcon:
-                            Icon(Iconsax.eye_slash, color: AppColors.brown),
-                      ),
                     ),
                   ],
                 ),
@@ -131,7 +132,7 @@ class _LoginPageState extends State<LoginPage> {
                 Row(
                   children: [
                     Checkbox(
-                      activeColor: AppColors.brown,
+                      activeColor: AppColors.secondary,
                       value: _stayLoggedIn,
                       onChanged: (value) {
                         setState(() {
@@ -209,7 +210,7 @@ class _LoginPageState extends State<LoginPage> {
               child: const Text(
                 'Registrieren',
                 style: TextStyle(
-                    color: AppColors.brown,
+                    color: AppColors.secondary,
                     fontWeight: FontWeight.w500,
                     fontSize: 14),
               ))

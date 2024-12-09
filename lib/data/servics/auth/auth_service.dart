@@ -1,3 +1,4 @@
+import 'package:skillzy/data/repository/user_repository.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
 class AuthService {
@@ -12,8 +13,11 @@ class AuthService {
 
   // Sign up
   Future<AuthResponse> signUpWithEmailAndPassword(
-      {required String email, required String password}) async {
-    return await _supabaseClient.auth.signUp(email: email, password: password);
+      {required String email,
+      required String password,
+      required String username}) async {
+    return await _supabaseClient.auth
+        .signUp(email: email, password: password, data: {'username': username});
   }
 
   // Logout
